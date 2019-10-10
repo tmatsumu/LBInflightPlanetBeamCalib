@@ -4,7 +4,7 @@ import sys
 import glob
 import lib_planetcal as lib_p
 from scipy.optimize import curve_fit
-import lib_lbv27 as lbv27
+import lib_lbv27_nomura as lbv27
 
 '''
 The values below are updated as of 2019-10-08 (PhaseA2)
