@@ -2,7 +2,7 @@ import numpy as np
 import pylab as py
 import sys
 import glob
-import lib_planetcal as lib_p
+import lib_planetcal_nomura as lib_p
 import scipy.special as sp
 from scipy.optimize import curve_fit
 import lib_lbv27_nomura as lbv27
@@ -249,29 +249,44 @@ for i in range(0,num_band):
     #          noise=noise, noise_floor=noise_floor, Dapt_mm=Dapt_mm, nu_obs=nu_obs, src_planet=src_planet,
     #          help='noise, noise_floor, D_mm, nu_obs, src_planet')
 
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    num_bin = 100
+    Br_S_R, Br_S_mean, Br_S_std, Br_S_med = lib_p.cal_Br(num_bin,X_deg,Y_deg,MAP_S)
+    Br_N_R, Br_N_mean, Br_N_std, Br_N_med = lib_p.cal_Br(num_bin,X_deg,Y_deg,MAP_N)
+    Br_SN_R, Br_SN_mean, Br_SN_std, Br_SN_med = lib_p.cal_Br(num_bin,X_deg,Y_deg,MAP_SN)
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
     py.subplot(235)
-    py.errorbar(np.array(Bk_S_kr), Bk_S_mean/max(Bk_S_mean), Bk_S_std/max(Bk_S_mean), fmt='o')
+#    py.errorbar(np.array(Bk_S_kr), Bk_S_mean/max(Bk_S_mean), Bk_S_std/max(Bk_S_mean), fmt='o')
+    py.errorbar(np.array(Br_S_R), Br_S_mean/max(Br_S_mean), Br_S_std/max(Br_S_mean), fmt='o')
     #sigma_tmp = 69./60./radeg/np.sqrt(8.*np.log(2.))
     #py.plot(np.array(Bk_S_kr), np.exp(-np.array(Bk_S_kr)**2*sigma_tmp**2))
     #py.semilogx()
     #py.errorbar(Bk_N_kr, Bk_N_mean/max(Bk_N_mean), Bk_N_std/max(Bk_N_mean),fmt='o')
     #py.semilogx()
-    py.errorbar(np.array(Bk_SN_kr), Bk_SN_mean/max(Bk_SN_mean), Bk_SN_std/max(Bk_SN_mean),fmt='.')
-    py.errorbar(np.array(Bk_N_kr), Bk_N_mean/max(Bk_SN_mean), Bk_N_std/max(Bk_SN_mean),fmt='.')
-    py.text(200,0.1, 'noise floor= %02.2e' % (noise_floor))
-    py.text(200,0.03, '$D$ = %02.2d mm' % (Dapt_mm))
-    py.text(200,0.01, '$\\nu$ = %02.2d GHz' % (nu_obs*1e-9))
+    py.errorbar(np.array(Br_SN_R), Br_SN_mean/max(Br_SN_mean), Br_SN_std/max(Br_SN_mean),fmt='.')
+    py.errorbar(np.array(Br_N_R), Br_N_mean/max(Br_SN_mean), Br_N_std/max(Br_SN_mean),fmt='.')
+#    py.text(200,0.1, 'noise floor= %02.2e' % (noise_floor))
+#    py.text(200,0.03, '$D$ = %02.2d mm' % (Dapt_mm))
+#    py.text(200,0.01, '$\\nu$ = %02.2d GHz' % (nu_obs*1e-9))
     py.semilogy()
-    py.ylim([1e-6,1.1])
-    py.xlim([0,1000])
-    py.xlabel('$|k|$')
+#    py.ylim([1e-6,1.1])
+#    py.xlim([0,1000])
+#    py.xlabel('$|k|$')
+    py.xlabel('$\\theta_r$ [degs]')
     py.ylabel('$B_k$')
-    py.title('Beam in Fourier space')
+#    py.title('Beam in Fourier space')
+    py.title('Map space beam')
 
     #++++++++
     py.subplot(236)
-    py.errorbar(np.array(Bk_S_kr), Bk_S_mean/max(Bk_S_mean), Bk_S_std/max(Bk_S_mean), fmt='o')
-    py.errorbar(np.array(Bk_SN_kr), Bk_SN_mean/max(Bk_SN_mean), Bk_SN_std/max(Bk_SN_mean),fmt='.')
+#    py.errorbar(np.array(Bk_S_kr), Bk_S_mean/max(Bk_S_mean), Bk_S_std/max(Bk_S_mean), fmt='o')
+    py.errorbar(np.array(Br_S_R), Br_S_mean/max(Br_S_mean), Br_S_std/max(Br_S_mean), fmt='o')
+#    py.errorbar(np.array(Bk_SN_kr), Bk_SN_mean/max(Bk_SN_mean), Bk_SN_std/max(Bk_SN_mean),fmt='.')
+    py.errorbar(np.array(Br_SN_R), Br_SN_mean/max(Br_SN_mean), Br_SN_std/max(Br_SN_mean),fmt='.')
     #py.errorbar(np.array(Bk_S_kr), (Bk_SN_mean/max(Bk_SN_mean) - Bk_S_mean/max(Bk_S_mean))/(Bk_S_mean/max(Bk_S_mean)), Bk_S_std/max(Bk_S_mean), fmt='o')
     #py.plot(np.array(Bk_S_kr), (Bk_SN_mean/max(Bk_SN_mean) - Bk_S_mean/max(Bk_S_mean))/(Bk_S_mean/max(Bk_S_mean)), 'o')
     #py.semilogx()
@@ -279,13 +294,15 @@ for i in range(0,num_band):
     #py.semilogx()
     #py.errorbar(Bk_SN_kr, Bk_SN_mean/max(Bk_SN_mean), Bk_SN_std/max(Bk_SN_mean),fmt='.')
     #py.semilogy()
-    py.ylim([1e-6,1.1])
-    py.xlim([1,10000])
+#    py.ylim([1e-6,1.1])
+#    py.xlim([1,10000])
     py.loglog()
-    py.xlabel('$|k|$')
-    py.ylabel('$\\Delta B_k/B_k$')
-    py.title('Beam in Fourier space')
-
+#    py.xlabel('$|k|$')
+#    py.ylabel('$\\Delta B_k/B_k$')
+#    py.title('Beam in Fourier space')
+    py.xlabel('$\\theta_r$ [degs]')
+    py.ylabel('$B_k$')
+    py.title('Map space beam')
     if option=='airyfunction':
         py.savefig( dir_out+'/AiryFunction/png/'+src_planet+'_'+str(nu_obs*1e-9)+'GHz_'+str(Dapt_mm)+'mm.png' )
     #np.savez( 'png/'+src_planet+'_'+str(nu_obs*1e-9)+'_'+str(Dapt_mm) )
