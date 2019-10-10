@@ -3,6 +3,7 @@ import pylab as py
 import sys
 import glob
 import lib_planetcal as lib_p
+import scipy.special as sp
 from scipy.optimize import curve_fit
 import lib_lbv27_nomura as lbv27
 
@@ -166,12 +167,30 @@ for i in range(0,num_band):
 #    print np.asarray_chkfinite(data)
 #    print np.asarray_chkfinite(data_err)
     ind = np.where(np.isnan(data) == True)
-    print ind
+#    print ind
 #    print MAP_S
 #    print MAP_S[50,50]
 #    print MAP_N[50,50]
-    print elip.gen_flatTruncGauss_map.x(nu_obs,edgetaper,radius)
+    wavelength = c/nu_obs
+    alpha = np.log(edgetaper)/(-2.)
+    theta_r = np.sqrt(X**2+Y**2)
+    beta = 2.*pi/wavelength * radius * np.sin(theta_r)
+    print lib_p.flatTruncGauss(alpha,beta)[50,50]      #=Z
+    
+#    for m in range(1,10):                             #ref : lib_p.flatTruncGauss 
+#        for n in range(1,10):
+#            aaaa = (2.*alpha)**(m+n)*sp.jv(m,beta)/beta**m * sp.jv(n,beta)/beta**n
+#            print aaaa
+#            print np.where(np.isnan(aaaa) == True)
+#            print aaaa[50,50]  
+    print beta
+    print beta[50,50]
+    print theta_r
+    print theta_r[50,50]
+    print X
     print X[50,50]
+    print Y
+    print Y[50,50]
 
     par_in = np.array([0.,0.,sigma_x_rad,sigma_y_rad,phi,np.max(MAP_SN)])
     par_out, par_err = curve_fit(fit_elipbeam_2D, (X,Y), data, sigma=data_err, p0=par_in)
