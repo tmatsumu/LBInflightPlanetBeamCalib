@@ -95,7 +95,8 @@ for i in range(0,num_band):
     #NET_per_det = noise_info_PhaseA2_LFT(sys.argv[2])
     #NET_per_det = noise_info_PhaseA2_HFT(sys.argv[2])
     NET_arr, numDet = lbv27.noise_info_PhaseA2(nu_obsGHz,Telescope)
-    NET_per_det = NET_arr * np.sqrt(numDet)
+    #NET_per_det = NET_arr * np.sqrt(numDet)
+    NET_per_det = NET_arr * np.sqrt(numDet*0.8) / 1.15
     #obs_eff = 0.85*0.85
     obs_eff = 0.8*0.9025
     time_interval_sec = 3.*obs_eff*3600.*24.*365.
