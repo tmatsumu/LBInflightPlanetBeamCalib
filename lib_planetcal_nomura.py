@@ -961,33 +961,107 @@ def DelTantenna2DelTcmb( T_antenna, nu):
     Bnu = x**2. * np.exp(x)/(np.exp(x)-1.)**2.
     return (1./Bnu)*T_antenna
     
-# below the information is coming from Weiland et al. (WMAP7)
+# below the information is coming from
 def planet_info(src_planet, nu_obs, sigma_r_rad, details=True):
     ''' src_planet: Jupiter, Mars, Saturn
         nu_obs: in unit of Hz, e.g. 100e9 Hz
         sigma_r: beam size
     '''
-
-    # below the information is coming from Weiland et al. (WMAP7)
+#from Planck Collaboration (planck intermediate results.2 planet flux densities)
     if src_planet == 'Jupiter':
-        T_antenna = 170.
-        planet_apparent_str = 2.481e-8
+        planet_apparent_str = 2.954e-8
+        if nu_obs == 40.e9: T_antenna = 161.
+        if nu_obs == 50.e9: T_antenna = 164.
+        if nu_obs == 60.e9: T_antenna = 167.
+        if nu_obs == 68.e9: T_antenna = 168.
+        if nu_obs == 78.e9: T_antenna = 168.
+        if nu_obs == 89.e9: T_antenna = 169.
+        if nu_obs == 100.e9: T_antenna = 169.
+        if nu_obs == 119.e9: T_antenna = 170.
+        if nu_obs == 140.e9: T_antenna = 170.
+        if nu_obs == 166.e9: T_antenna = 170.
+        if nu_obs == 195.e9: T_antenna = 170.
+        if nu_obs == 235.e9: T_antenna = 170.
+        if nu_obs == 280.e9: T_antenna = 170.
+        if nu_obs == 337.e9: T_antenna = 169.
+        if nu_obs == 402.e9: T_antenna = 167.
 
+#from http://www.lesia.obspm.fr/perso/emmanuel-lellouch/mars/ ,note that the assumption when obserbation starts is 2028/03/23        
     if src_planet == 'Mars':
-        T_antenna = 200.
-        planet_apparent_str = 2.*np.arccos(1.-7.153e-10/(2.*pi))
+        planet_apparent_str = 2.*np.arccos(1.-7.153e-10/(2.*pi)) #no update yet
+        if nu_obs == 40.e9: T_antenna = 216.
+        if nu_obs == 50.e9: T_antenna = 218.
+        if nu_obs == 60.e9: T_antenna = 220.
+        if nu_obs == 68.e9: T_antenna = 221.
+        if nu_obs == 78.e9: T_antenna = 222.
+        if nu_obs == 89.e9: T_antenna = 223.
+        if nu_obs == 100.e9: T_antenna = 224.
+        if nu_obs == 119.e9: T_antenna = 226.
+        if nu_obs == 140.e9: T_antenna = 228.
+        if nu_obs == 166.e9: T_antenna = 229.
+        if nu_obs == 195.e9: T_antenna = 231.
+        if nu_obs == 235.e9: T_antenna = 232.
+        if nu_obs == 280.e9: T_antenna = 233.
+        if nu_obs == 337.e9: T_antenna = 234.
+        if nu_obs == 402.e9: T_antenna = 236.
 
+#from Planck Collaboration (planck intermediate results.2 planet flux densities)
     if src_planet == 'Saturn':
-        T_antenna = 150.
-        planet_apparent_str = 2.*np.arccos(1.-5.096e-9/(2.*pi))
-
+        planet_apparent_str = 2.*np.arccos(1.-5.096e-9/(2.*pi)) #no update yet
+        if nu_obs == 40.e9: T_antenna = 140.
+        if nu_obs == 50.e9: T_antenna = 141.
+        if nu_obs == 60.e9: T_antenna = 142.
+        if nu_obs == 68.e9: T_antenna = 142.
+        if nu_obs == 78.e9: T_antenna = 143.
+        if nu_obs == 89.e9: T_antenna = 143.
+        if nu_obs == 100.e9: T_antenna = 143.
+        if nu_obs == 119.e9: T_antenna = 143.
+        if nu_obs == 140.e9: T_antenna = 143.
+        if nu_obs == 166.e9: T_antenna = 142.
+        if nu_obs == 195.e9: T_antenna = 142.
+        if nu_obs == 235.e9: T_antenna = 141.
+        if nu_obs == 280.e9: T_antenna = 131.
+        if nu_obs == 337.e9: T_antenna = 137.
+        if nu_obs == 402.e9: T_antenna = 134.
+            
+#from https://www.cosmos.esa.int/web/herschel/calibrator-models#uranus,note that we use uranus_esa4.fits
     if src_planet == 'Uranus':
-        T_antenna = 110.; 
-        solid_ref = 2.482e-10
+        planet_apparent_str = 2.261e-10
+        if nu_obs == 40.e9: T_antenna = 191.6
+        if nu_obs == 50.e9: T_antenna = 175.6
+        if nu_obs == 60.e9: T_antenna = 161.9
+        if nu_obs == 68.e9: T_antenna = 152.8
+        if nu_obs == 78.e9: T_antenna = 143.5
+        if nu_obs == 89.e9: T_antenna = 135.2
+        if nu_obs == 100.e9: T_antenna = 128.1
+        if nu_obs == 119.e9: T_antenna = 118.
+        if nu_obs == 140.e9: T_antenna = 109.5
+        if nu_obs == 166.e9: T_antenna = 103.1
+        if nu_obs == 195.e9: T_antenna = 100.
+        if nu_obs == 235.e9: T_antenna = 97.
+        if nu_obs == 280.e9: T_antenna = 92.1
+        if nu_obs == 337.e9: T_antenna = 87.1
+        if nu_obs == 402.e9: T_antenna = 82.2
 
+            
+#from https://www.cosmos.esa.int/web/herschel/calibrator-models#neptune,note that we use neptune_esa5.fits
     if src_planet == 'Neptune':
-        T_antenna = 150.; 
-        solid_ref = 1.006e-10
+        planet_apparent_str = 9.766e-11
+        if nu_obs == 40.e9: T_antenna = 137.9
+        if nu_obs == 50.e9: T_antenna = 135.4
+        if nu_obs == 60.e9: T_antenna = 133.1
+        if nu_obs == 68.e9: T_antenna = 131.3
+        if nu_obs == 78.e9: T_antenna = 128.9
+        if nu_obs == 89.e9: T_antenna = 126.2
+        if nu_obs == 100.e9: T_antenna = 123.4
+        if nu_obs == 119.e9: T_antenna = 118.2
+        if nu_obs == 140.e9: T_antenna = 112.5
+        if nu_obs == 166.e9: T_antenna = 106.
+        if nu_obs == 195.e9: T_antenna = 99.8
+        if nu_obs == 235.e9: T_antenna = 93.4
+        if nu_obs == 280.e9: T_antenna = 87.9
+        if nu_obs == 337.e9: T_antenna = 81.9
+        if nu_obs == 402.e9: T_antenna = 78.
 
     planet_apparentfullangle_rad = 2.*np.arccos(1.-planet_apparent_str/(2.*pi))
     beam_appearnt_str = 2.*pi*(1.-np.cos(sigma_r_rad))
@@ -1010,6 +1084,54 @@ def planet_info(src_planet, nu_obs, sigma_r_rad, details=True):
         print ' appearent amplitude of a planet in uKcmb', A # convert to uK in apparent amplitude
 
     return A
+
+# below the information is coming from Weiland et al. (WMAP7)
+#def planet_info(src_planet, nu_obs, sigma_r_rad, details=True):
+#    ''' src_planet: Jupiter, Mars, Saturn
+#        nu_obs: in unit of Hz, e.g. 100e9 Hz
+#        sigma_r: beam size
+#    '''
+#    if src_planet == 'Jupiter':
+#        T_antenna = 170.
+#        planet_apparent_str = 2.481e-8
+
+#    if src_planet == 'Mars':
+#        T_antenna = 200.
+#        planet_apparent_str = 2.*np.arccos(1.-7.153e-10/(2.*pi))
+
+#    if src_planet == 'Saturn':
+#        T_antenna = 150.
+#        planet_apparent_str = 2.*np.arccos(1.-5.096e-9/(2.*pi))
+
+#    if src_planet == 'Uranus':
+#        T_antenna = 110.; 
+#        solid_ref = 2.482e-10
+
+#    if src_planet == 'Neptune':
+#        T_antenna = 150.; 
+#        solid_ref = 1.006e-10
+
+#    planet_apparentfullangle_rad = 2.*np.arccos(1.-planet_apparent_str/(2.*pi))
+#    beam_appearnt_str = 2.*pi*(1.-np.cos(sigma_r_rad))
+#    A_original = DelTantenna2DelTcmb( T_antenna, nu_obs)
+#    A = A_original*1e6 * (planet_apparent_str/beam_appearnt_str)
+
+#    if details==True:
+#        print '+++++++++++++++++++++++'
+#        print '    Band:', nu_obs*1e-9, 'GHz'
+#        print '    FWHM:', np.sqrt(8.*np.log(2))*sigma_r_rad*10800./pi, 'arcmin'
+#        print '    sigma_r:', sigma_r_rad, 'rad'
+#        #print '    np.sqrt(sigma_x**2+sigma_y**2):', np.sqrt(sigma_x**2+sigma_y**2), 'rad'
+#        print '   src_planet:', src_planet
+#        print '            A=', A_original, 'Kcmb' # convert to uK
+#        print ' Planet appearent str', planet_apparent_str
+#        print ' LB beam str', beam_appearnt_str
+#        print ' beam dilution factor', planet_apparent_str/beam_appearnt_str
+#        print '   apparent planet diameter in arcsec', planet_apparentfullangle_rad * radeg * 3600.
+#        #print '  beam dilution ratio:', (apparent/np.sqrt(sigma_x**2+sigma_y**2))**2
+#        print ' appearent amplitude of a planet in uKcmb', A # convert to uK in apparent amplitude
+
+#    return A
 
 # below the information is coming from Weiland et al. (WMAP7)
 #def planet_info(src_planet,nu_obs,sigma_x,sigma_y):
