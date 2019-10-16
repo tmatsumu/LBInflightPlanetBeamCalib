@@ -645,6 +645,7 @@ def cal_Br(num, X,Y,Br):
     
     for i in range(num):
         ind = np.where( (R>=R_i[i]-R_del*0.5) & (R<R_i[i]+R_del*0.5) )
+#        print len(ind[0])
         if len(ind[0]) ==0: 
             continue
         Brout_R.append(np.mean(R[ind]))
@@ -654,6 +655,32 @@ def cal_Br(num, X,Y,Br):
 
     return Brout_R, Brout_mean, Brout_std, Brout_median
 
+def cal_noise(num, X,Y,Br):    
+    R = np.sqrt(X**2 + Y**2)
+    R_max = np.amax(R); R_min = np.amin(R)
+    R_del = (R_max - R_min)/float(num)
+    
+    Brout_R = []
+    Brout_mean = []
+    Brout_std = []
+    Brout_median = []
+    R_i = np.arange(num)/float(num)*(R_max-R_min)+R_min
+    
+    for i in range(num):
+        ind = np.where( (R>=R_i[i]-R_del*0.5) & (R<R_i[i]+R_del*0.5) )
+#        print len(ind[0])
+        if len(ind[0]) ==0: 
+            continue
+        N = len(ind[0])
+        print N
+        Brout_R.append(np.mean(R[ind]))
+        Brout_mean.append(np.mean(np.abs(Br[ind])))
+#        print Brout_mean
+        Brout_std.append(np.std(np.abs(Br[ind]/np.sqrt(N))))
+#        print Brout_std
+        Brout_median.append(np.median(np.abs(Br[ind])))
+
+    return Brout_R, Brout_mean, Brout_std, Brout_median
 def minimize_fit1DGaussian(par,x,y_data,y_err):
     y_model = fit1DGaussian(par,x)
     out = np.sum((y_data - y_model)**2/y_err**2)
@@ -1064,15 +1091,16 @@ def planet_info(src_planet, nu_obs, sigma_r_rad, details=True):
         if nu_obs == 402.e9: T_antenna = 78.
 
     planet_apparentfullangle_rad = 2.*np.arccos(1.-planet_apparent_str/(2.*pi))
-    beam_appearnt_str = 2.*pi*(1.-np.cos(sigma_r_rad))
+#    beam_appearnt_str = 2.*pi*(1.-np.cos(sigma_r_rad))
+    beam_appearnt_str = sigma_r_rad
     A_original = DelTantenna2DelTcmb( T_antenna, nu_obs)
     A = A_original*1e6 * (planet_apparent_str/beam_appearnt_str)
 
     if details==True:
         print '+++++++++++++++++++++++'
         print '    Band:', nu_obs*1e-9, 'GHz'
-        print '    FWHM:', np.sqrt(8.*np.log(2))*sigma_r_rad*10800./pi, 'arcmin'
-        print '    sigma_r:', sigma_r_rad, 'rad'
+#        print '    FWHM:', np.sqrt(8.*np.log(2))*sigma_r_rad*10800./pi, 'arcmin'
+#        print '    sigma_r:', sigma_r_rad, 'rad'
         #print '    np.sqrt(sigma_x**2+sigma_y**2):', np.sqrt(sigma_x**2+sigma_y**2), 'rad'
         print '   src_planet:', src_planet
         print '            A=', A_original, 'Kcmb' # convert to uK
