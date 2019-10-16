@@ -269,7 +269,8 @@ for i in range(0,num_band):
     #py.errorbar(Bk_N_kr, Bk_N_mean/max(Bk_N_mean), Bk_N_std/max(Bk_N_mean),fmt='o')
     #py.semilogx()
     py.errorbar(np.array(Br_SN_R), Br_SN_mean/max(Br_SN_mean), Br_SN_std/max(Br_SN_mean),fmt='.')
-    py.errorbar(np.array(Br_N_R), Br_N_mean/max(Br_SN_mean), Br_N_std/max(Br_SN_mean),fmt='.')
+#    py.errorbar(np.array(Br_N_R), Br_N_mean/max(Br_SN_mean), Br_N_std/max(Br_SN_mean),fmt='.')
+    py.plot(np.array(Br_N_R), Br_N_std/max(Br_SN_mean),'o',ms=1)
 #    py.text(200,0.1, 'noise floor= %02.2e' % (noise_floor))
 #    py.text(200,0.03, '$D$ = %02.2d mm' % (Dapt_mm))
 #    py.text(200,0.01, '$\\nu$ = %02.2d GHz' % (nu_obs*1e-9))
@@ -278,7 +279,7 @@ for i in range(0,num_band):
 #    py.xlim([0,1000])
 #    py.xlabel('$|k|$')
     py.xlabel('$\\theta_r$ [degs]')
-    py.ylabel('$B_k$')
+    py.ylabel('$B(\\theta_r)$')
 #    py.title('Beam in Fourier space')
     py.title('Map space beam')
 
@@ -302,8 +303,10 @@ for i in range(0,num_band):
 #    py.ylabel('$\\Delta B_k/B_k$')
 #    py.title('Beam in Fourier space')
     py.xlabel('$\\theta_r$ [degs]')
-    py.ylabel('$B_k$')
+    py.ylabel('$B(\\theta_r)$')
+#    py.title('Beam in Fourier space')
     py.title('Map space beam')
+    
     if option=='airyfunction':
         py.savefig( dir_out+'/AiryFunction/png/'+src_planet+'_'+str(nu_obs*1e-9)+'GHz_'+str(Dapt_mm)+'mm.png' )
     #np.savez( 'png/'+src_planet+'_'+str(nu_obs*1e-9)+'_'+str(Dapt_mm) )
