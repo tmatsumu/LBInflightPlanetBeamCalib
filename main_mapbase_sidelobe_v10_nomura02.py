@@ -367,17 +367,3 @@ for i in range(0,num_band):
                   help='noise, noise_floor, D_mm, nu_obs, src_planet')
     """
     py.show()
-
-
-# In[3]:
-
-
-import numpy as np
-print 2.*np.arccos(1.-5.096e-9/(2.*np.pi))
-
-
-# In[ ]:
-
-
-
-
