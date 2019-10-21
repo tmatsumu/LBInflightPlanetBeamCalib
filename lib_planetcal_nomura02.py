@@ -17,6 +17,7 @@ import matplotlib as mpl
 from mpl_toolkits.mplot3d import axes3d, Axes3D
 #import matplotlib.pyplot as plt
 import pylab as py
+import lib_lbv27_nomura02 as lbv27
 
 pi = np.pi
 h = 6.67e-34
@@ -443,6 +444,30 @@ def curvefitfunc_ellipGauss((X,Y), x0,y0,sigma_x,sigma_y,theta,A):
                        - 0.5*(np.sin(theta)*(X-x0)+np.cos(theta)*(Y-y0))**2/sigma_y**2)
     return out.ravel()
     
+def AiryFunc(theta,freq,radius):
+    k = 2.*pi/c*freq
+    beta = k*radius*np.sin(theta)
+    airy = (2.*sp.jv(1.,beta)/beta)**2
+    return airy
+
+def flatTruncGauss(alpha, beta):
+    sumout = np.zeros(len(beta))
+    m_max = 10
+    n_max = 10
+    for m in range(1,m_max):
+        for n in range(1,n_max):
+            sumout = sumout + (2.*alpha)**(m+n)*sp.jv(m,beta)/beta**m * sp.jv(n,beta)/beta**n
+#    print sumout
+    out = np.exp(-2.*alpha)/(1.-np.exp(-alpha))**2 * sumout
+    return out
+
+def beam_solidangle_AirySymmetric(freq,Diameter):
+    radius = Diameter/2.
+    num = 10000
+    theta = np.arange(num)/float(num)*pi/10. + 0.0000001
+    #    return the solidangle in steradian
+    return 2.*pi*np.sum(np.sin(theta)*AiryFunc(theta,freq,radius))*(theta[1]-theta[0])
+    
 class ellipticalGaussian():
     def __init__(self):
         self.par = np.array([0.,0.,1.,1.,0.,1.])
@@ -484,7 +509,7 @@ class ellipticalGaussian():
         self.y = np.arange(-0.5*self.map_width_rad, 0.5*self.map_width_rad, self.resol_rad)
         self.X,self.Y = np.meshgrid(self.x, self.y)
         theta_r = np.sqrt(self.X**2+self.Y**2)
-        beta = 2.*pi/wavelength * radius * np.sin(theta_r)
+        beta = 2. * pi/wavelength * radius * np.sin(theta_r)
         self.Z = flatTruncGauss(alpha,beta)
         return self.X, self.Y, self.Z
 
@@ -944,30 +969,6 @@ def dPowerdT( T, nu_arr):
                       *(nu_arr[1]-nu_arr[0])
     return dPdT
 
-def AiryFunc(theta,freq,radius):
-    k = 2.*pi/c*freq
-    beta = k*radius*np.sin(theta)
-    airy = (2.*sp.jv(1.,beta)/beta)**2
-    return airy
-
-def flatTruncGauss(alpha, beta):
-    sumout = np.zeros(len(beta))
-    m_max = 10
-    n_max = 10
-    for m in range(1,m_max):
-        for n in range(1,n_max):
-            sumout = sumout + (2.*alpha)**(m+n)*sp.jv(m,beta)/beta**m * sp.jv(n,beta)/beta**n
-#    print sumout
-    out = np.exp(-2.*alpha)/(1.-np.exp(-alpha))**2 * sumout
-    return out
-
-def beam_solidangle_AirySymmetric(freq,Diameter):
-    radius = Diameter/2.
-    num = 10000
-    theta = np.arange(num)/float(num)*pi/10. + 0.0000001
-    #    return the solidangle in steradian
-    return 2.*pi*np.sum(np.sin(theta)*AiryFunc(theta,freq,radius))*(theta[1]-theta[0])
-
 def beam_solidangle_PvsTheta(theta,PvsTheta):
     #    return the solidangle in steradian
     return 2.*pi*np.sum(np.sin(theta)*PvsTheta(theta))*(theta[1]-theta[0])
@@ -991,7 +992,7 @@ def DelTantenna2DelTcmb( T_antenna, nu):
     return (1./Bnu)*T_antenna
     
 # below the information is coming from
-def planet_info(src_planet, nu_obs, sigma_r, option, details=True):
+def planet_info(src_planet, Telescope, nu_obs, sigma_r, option, Dpixmm, details=True):
     ''' src_planet: Jupiter, Mars, Saturn
         nu_obs: in unit of Hz, e.g. 100e9 Hz
         sigma_r: beam size [arcmin]
@@ -1104,7 +1105,10 @@ def planet_info(src_planet, nu_obs, sigma_r, option, details=True):
             beam_appearnt_str = beam_appearnt_str + del_str * mag * pi/180
 
     if option == 'TruncGaussian':
-        beam_appearnt_str = 2.*pi*(1.-np.cos(sigma_r_rad))
+        Fnum, BeamWaistFact, radius = lbv27.Telescope_info(Telescope)
+        edgetaper = lbv27.CalcSEdgeTaper_v27(nu_obs,Fnum,Dpixmm,BeamWaistFact)
+        tmp_theta, tmp_out = ellipticalGaussian().gen_flatTruncGauss_2D(nu_obs,edgetaper,radius)
+        beam_appearnt_str = 2.*pi*np.sum(np.sin(tmp_theta)*tmp_out)*(tmp_theta[1]-tmp_theta[0])
         
     if option=='airyfunction':
         beam_appearnt_str = 2.*pi*(1.-np.cos(sigma_r_rad))
