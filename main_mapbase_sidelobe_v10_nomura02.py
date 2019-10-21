@@ -1,23 +1,11 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[8]:
-
-
-get_ipython().magic(u'matplotlib inline')
-get_ipython().magic(u"config InlineBackend.figure_format = 'retina'")
-
-from IPython.core.display import display, HTML
-display(HTML("<style>.container { width:100% !important; }</style>"))
-
 import numpy as np
 import pylab as py
 import sys
 import glob
-import lib_planetcal as lib_p
+import lib_planetcal_nomura02 as lib_p
 from scipy.optimize import curve_fit
 import scipy.special as sp
-import lib_lbv27 as lbv27
+import lib_lbv27_nomura02 as lbv27
 
 '''
 The values below are updated as of 2019-10-08 (PhaseA2)
@@ -49,7 +37,7 @@ option = 'TruncGaussian'
 src_planet = 'Jupiter'
 
 Fnum, BeamWaistFact, radius = lbv27.Telescope_info(Telescope)
-Dapt_mm = radius*2.*1e3
+#Dapt_mm = radius*2.*1e3
 
 FreqWafer_arr = lbv27.Gen_ArrFreqWafer(Telescope)
 num_band = len(FreqWafer_arr)
@@ -64,6 +52,11 @@ for i in range(0,num_band):
     nu_obs = nu_obsGHz*1.e9
     Dpixmm = lbv27.Dpixmm_info_PhaseA2_v27(FreqWafer,Telescope)
     edgetaper = lbv27.CalcSEdgeTaper_v27(nu_obs,Fnum,Dpixmm,BeamWaistFact)
+    Te = -10.*np.log10(edgetaper)
+    Te_dB = lbv27.CalcEdgeTaper_dB(Te)
+    comp = lbv27.CalcEdgeTaper_dB(1./0.1151)
+    print edgetaper, Te, Te_dB
+    print edgetaper, np.log(edgetaper)/(-2.)/0.1151, comp
     beam_arcmin = lbv27.beamarcmin_info_PhaseA2(nu_obsGHz,Telescope)
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -102,7 +95,9 @@ for i in range(0,num_band):
         X, Y, MAP_S = elip.gen_flatTruncGauss_map(nu_obs,edgetaper,radius)
         MAP_S[50,50] = 1.
         tmp_theta, tmp_out = elip.gen_flatTruncGauss_2D(nu_obs,edgetaper,radius)
+#        print tmp_theta,tmp_out
         beam_solid_str = 2.*pi*np.sum(np.sin(tmp_theta)*tmp_out)*(tmp_theta[1]-tmp_theta[0])
+        
         print 'beam solid angle', beam_solid_str
     #beam_solid_str = np.sum(MAP_S)
     #beam_solid_str = lib_p.beam_solidangle_AirySymmetric(nu_obs,Dapt_mm*1e-3)
@@ -110,7 +105,7 @@ for i in range(0,num_band):
 
 
     print 'input:', src_planet,nu_obs,beam_solid_str
-    Amp = lib_p.planet_info(src_planet,nu_obs,beam_arcmin,option)
+    Amp = lib_p.planet_info(src_planet,Telescope,nu_obs,beam_arcmin,option,Dpixmm)
     MAP_S = MAP_S*Amp
 
     print 'amp', Amp
@@ -285,8 +280,7 @@ for i in range(0,num_band):
     num_bin = 100
     Br_S_R, Br_S_mean, Br_S_std, Br_S_med = lib_p.cal_Br(num_bin,X_deg,Y_deg,MAP_S)
     Br_N_R, Br_N_mean, Br_N_std, Br_N_med = lib_p.cal_noise(num_bin,X_deg,Y_deg,MAP_N)
-    Br_SN_R, Br_SN_mean, Br_SN_std, Br_SN_med = lib_p.cal_Br(num_bin,X_deg,Y_deg,MAP_SN)
-    print "***********************************************"
+    """print "***********************************************"
     print Br_S_mean
     print ""
     print Br_S_std
@@ -299,7 +293,9 @@ for i in range(0,num_band):
     print ""
     print Br_SN_std
     print "***********************************************"
-    
+    """
+    Br_SN_R, Br_SN_mean, Br_SN_std, Br_SN_med = lib_p.cal_Br(num_bin,X_deg,Y_deg,MAP_SN)
+
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
